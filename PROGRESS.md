@@ -62,34 +62,34 @@
 **Goal:** Real expenses from Convex shown on mobile. Add-expense form working.
 
 ### Dashboard
-- [ ] Wire up `api.analytics.getMonthSummary` to KPI cards (Income / Expenses / Balance this month)
-- [ ] Build animated `MoneyText` component — JetBrains Mono, color based on type (green=income, rose=expense)
-- [ ] Build `RecentTransactionsList` — `FlatList` with category icon bubble, description, relative date, amount
-- [ ] Build `SkeletonCard` and `SkeletonList` components (no spinners, ever)
-- [ ] Relative date helper: "Today", "Yesterday", "3 days ago", "Jun 1"
+- [x] Wire up `api.expenses.getSummary` to KPI cards (Income / Expenses / Balance this month)
+- [x] Build animated `MoneyText` component — JetBrains Mono, color based on type (green=income, rose=expense)
+- [x] Build `RecentTransactionsList` — `FlatList` with category icon bubble, description, relative date, amount
+- [x] Build `SkeletonCard` and `SkeletonList` components (no spinners, ever)
+- [x] Relative date helper: "Today", "Yesterday", "3 days ago", "Jun 1"
 
 ### Expense List Screen
-- [ ] Full `FlatList` of expenses from `api.expenses.list` with pagination
-- [ ] Filter bar: All / Income / Expense toggle
-- [ ] Swipe-to-delete on expense row (Reanimated v4 `useAnimatedStyle` + `useSharedValue`)
-- [ ] Empty state with illustration + "Add your first expense" CTA
+- [x] Full `FlatList` of expenses from `api.expenses.list` with pagination (`usePaginatedQuery`)
+- [x] Filter bar: All / Income / Expense toggle
+- [x] Swipe-to-delete on expense row (`ReanimatedSwipeable` from gesture-handler v2)
+- [x] Empty state with illustration + "Add your first expense" CTA
 
 ### Add Expense Form
-- [ ] Custom numpad component (0-9 keys + decimal + backspace)
-- [ ] Amount display in JetBrains Mono at top of modal (₱ formatted, updates as typed)
-- [ ] Expense / Income toggle (rose / emerald)
-- [ ] Category selector — horizontal `ScrollView` of category pills from `api.categories.list`
-- [ ] Description `TextInput`
-- [ ] Date picker (default today, tap to change)
-- [ ] Submit → `api.expenses.create` → close modal → show success toast
+- [x] Custom numpad component (0-9 keys + decimal + backspace)
+- [x] Amount display in JetBrains Mono at top of modal (₱ formatted, updates as typed)
+- [x] Expense / Income toggle (rose / emerald)
+- [x] Category selector — horizontal `ScrollView` of category pills from `api.categories.list`
+- [x] Description `TextInput`
+- [x] Date picker (default today, tap to change) — `react-native-ui-datepicker` shadcn-style
+- [x] Submit → `api.expenses.create` → close modal → show success toast
 
 ### Edit / Delete
-- [ ] `app/(app)/expense/[id].tsx` — detail/edit screen
-- [ ] Long-press on expense row → action sheet (Edit / Delete)
-- [ ] Delete with undo toast (5-second window matching web behavior)
+- [x] `app/(app)/expense/[id].tsx` — detail/edit screen
+- [x] Long-press on expense row → action sheet (Edit / Delete)
+- [x] Delete with undo toast (5-second window matching web behavior)
 
-**Status:** Not Started
-**Notes:** Amounts always in centavos integers. Dates as Unix ms. Use `pesosToCentavos()` before submitting.
+**Status:** ~~Not Started~~ | **Complete**
+**Notes:** Amounts always in centavos integers. Dates as Unix ms. Use `pesosToCentavos()` before submitting. Used `api.expenses.getSummary` (not `api.analytics.getMonthSummary`) for dashboard — direct, no date-range calculation needed for the query itself.
 
 ---
 
@@ -97,27 +97,27 @@
 **Goal:** Budget progress bars working. Utang tracker screen complete.
 
 ### Budgets
-- [ ] `app/(app)/budgets.tsx` — screen accessible from More tab
-- [ ] Build `BudgetCard` — category name, period, progress bar, spent/limit amounts
-- [ ] `ProgressBar` component — emerald (0–79%) → amber (80–99%) → pulsing rose (≥100%)
-- [ ] Add Budget form: category picker, amount input (numpad), period selector
-- [ ] Wire up `api.budgets.list` (with `getWithSpending` for real-time spent amount)
-- [ ] Wire up `api.budgets.create` and `api.budgets.delete`
-- [ ] Empty state: "No budgets yet — set one to track your spending"
-- [ ] Budget threshold alert: show warning badge when ≥ 80%
+- [x] `app/(app)/budgets.tsx` — screen accessible from More tab
+- [x] Build `BudgetCard` — category name, period, progress bar, spent/limit amounts
+- [x] `ProgressBar` component — emerald (0–79%) → amber (80–99%) → pulsing rose (≥100%)
+- [x] Add Budget form: category picker, amount input (numpad), period selector
+- [x] Wire up `api.budgets.getWithSpending` (real-time spent + percentage)
+- [x] Wire up `api.budgets.create` and `api.budgets.remove`
+- [x] Empty state: "No budgets yet — set one to track your spending"
+- [x] Budget threshold alert: warning badge when ≥ 80%, over-budget badge at 100%
 
 ### Utang Tracker
-- [ ] `app/(app)/utang.tsx` — screen accessible from More tab
-- [ ] "I Owe" / "Owed to Me" tab switcher at top
-- [ ] Build `DebtCard` — person name, total, paid, remaining, progress bar, due date badge
-- [ ] Add Debt form: person name, type, amount, due date (optional), notes
-- [ ] Mark payment: bottom sheet with amount input → `api.debtPayments.create`
-- [ ] Settle debt: mark as fully paid → `api.debts.settle`
-- [ ] Wire up `api.debts.list`, `api.debts.create`, `api.debtPayments.create`
-- [ ] Empty state for each tab
+- [x] `app/(app)/utang.tsx` — screen accessible from More tab
+- [x] "Utang Ko" / "Utang sa Akin" tab switcher at top
+- [x] Build `DebtCard` — person name, total, paid, remaining, progress bar, due date badge
+- [x] Add Debt form: person name, type, amount, due date (optional + Switch), notes
+- [x] Mark payment: modal route `debt/[id]/pay` with numpad → `api.debts.addPayment`
+- [x] Settle debt: confirm Alert → `api.debts.settle`
+- [x] Wire up `api.debts.list`, `api.debts.create`, `api.debts.addPayment`, `api.debts.getSummary`
+- [x] Empty state for each tab + DebtSummaryHeader (owed-to-me / I-owe / net)
 
-**Status:** Not Started
-**Notes:** Debt `type` is `"owed_to_me"` or `"i_owe"` — drives tab placement. Progress bar on debts uses danger color for overdue, accent for approaching due date.
+**Status:** ~~Not Started~~ | **Complete**
+**Notes:** Payment API is `api.debts.addPayment` (not `api.debtPayments.create` — that table exists but has no public mutation). Debt progress bar uses inverse color (higher % = greener, rewarding paydown). Due date badge: Overdue (rose) / Due ≤3d (amber) / Due (muted).
 
 ---
 
