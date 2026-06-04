@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useAuth } from "@clerk/expo";
 import { Redirect } from "expo-router";
+import { ToastProvider } from "@/components/feedback/ToastProvider";
 
 const TAB_CONFIG = [
   { name: "index", label: "Home", icon: "🏠" },
@@ -31,6 +32,8 @@ function GastoGuardTabBar({ state, navigation }: BottomTabBarProps) {
         const isFAB = route.name === "add-expense";
         const isFocused = state.index === index;
         const config = TAB_CONFIG.find((t) => t.name === route.name);
+
+        if (!config) return null;
 
         const onPress = () => {
           const event = navigation.emit({
@@ -112,15 +115,25 @@ export default function AppLayout() {
   }
 
   return (
-    <Tabs
-      tabBar={(props) => <GastoGuardTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
-    >
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="expenses" />
-      <Tabs.Screen name="add-expense" options={{ presentation: "modal" }} />
-      <Tabs.Screen name="savings" />
-      <Tabs.Screen name="more" />
-    </Tabs>
+    <ToastProvider>
+      <Tabs
+        tabBar={(props) => <GastoGuardTabBar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="expenses" />
+        <Tabs.Screen name="add-expense" options={{ presentation: "modal" }} />
+        <Tabs.Screen name="savings" />
+        <Tabs.Screen name="more" />
+        {/* Modal routes — hidden from tab bar */}
+        <Tabs.Screen name="expense/[id]" options={{ href: null }} />
+        <Tabs.Screen name="budget/new" options={{ href: null, presentation: "modal" }} />
+        <Tabs.Screen name="debt/new" options={{ href: null, presentation: "modal" }} />
+        <Tabs.Screen name="debt/[id]/pay" options={{ href: null, presentation: "modal" }} />
+        {/* Push screens from More */}
+        <Tabs.Screen name="budgets" options={{ href: null }} />
+        <Tabs.Screen name="utang" options={{ href: null }} />
+      </Tabs>
+    </ToastProvider>
   );
 }
