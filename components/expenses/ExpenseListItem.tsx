@@ -5,6 +5,7 @@ import type Animated from "react-native-reanimated";
 import { useAnimatedStyle } from "react-native-reanimated";
 import { TransactionRow } from "./TransactionRow";
 import type { ExpenseWithCategory } from "@/lib/types";
+import { useHaptics } from "@/hooks/use-haptics";
 
 type Props = {
   tx: ExpenseWithCategory;
@@ -39,6 +40,7 @@ export const ExpenseListItem = memo(function ExpenseListItem({
   onLongPress,
 }: Props) {
   const swipeRef = useRef<any>(null);
+  const haptics = useHaptics();
 
   const renderRightActions = useCallback(
     (_progress: Animated.SharedValue<number>, dragX: Animated.SharedValue<number>) => (
@@ -48,9 +50,10 @@ export const ExpenseListItem = memo(function ExpenseListItem({
   );
 
   const handleSwipeOpen = useCallback(() => {
+    haptics.heavy();
     onDelete(tx);
     swipeRef.current?.close();
-  }, [tx, onDelete]);
+  }, [tx, onDelete, haptics]);
 
   return (
     <Swipeable
