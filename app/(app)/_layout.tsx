@@ -5,6 +5,7 @@ import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useAuth } from "@clerk/expo";
 import { Redirect } from "expo-router";
 import { ToastProvider } from "@/components/feedback/ToastProvider";
+import { useHaptics } from "@/hooks/use-haptics";
 
 const TAB_CONFIG = [
   { name: "index", label: "Home", icon: "🏠" },
@@ -16,6 +17,7 @@ const TAB_CONFIG = [
 
 function GastoGuardTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const haptics = useHaptics();
 
   return (
     <View
@@ -53,7 +55,7 @@ function GastoGuardTabBar({ state, navigation }: BottomTabBarProps) {
               style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
             >
               <TouchableOpacity
-                onPress={onPress}
+                onPress={() => { haptics.medium(); onPress(); }}
                 style={{
                   width: 56,
                   height: 56,
@@ -130,6 +132,11 @@ export default function AppLayout() {
         <Tabs.Screen name="budget/new" options={{ href: null, presentation: "modal" }} />
         <Tabs.Screen name="debt/new" options={{ href: null, presentation: "modal" }} />
         <Tabs.Screen name="debt/[id]/pay" options={{ href: null, presentation: "modal" }} />
+        {/* Savings modal routes */}
+        <Tabs.Screen name="savings/new" options={{ href: null, presentation: "modal" }} />
+        <Tabs.Screen name="savings/[id]/contribute" options={{ href: null, presentation: "modal" }} />
+        {/* Analytics screen */}
+        <Tabs.Screen name="analytics" options={{ href: null }} />
         {/* Push screens from More */}
         <Tabs.Screen name="budgets" options={{ href: null }} />
         <Tabs.Screen name="utang" options={{ href: null }} />
