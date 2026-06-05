@@ -1,6 +1,7 @@
 import "../global.css";
-import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { useEffect, useRef } from "react";
+import { AppState, AppStateStatus } from "react-native";
+import { Stack, useRouter } from "expo-router";
 import { ClerkProvider, useAuth } from "@clerk/expo";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { tokenCache } from "@clerk/expo/token-cache";
@@ -16,6 +17,8 @@ import {
 import { PlusJakartaSans_700Bold } from "@expo-google-fonts/plus-jakarta-sans";
 import { JetBrainsMono_500Medium } from "@expo-google-fonts/jetbrains-mono";
 import { StatusBar } from "expo-status-bar";
+import { useBiometricAuth } from "@/hooks/use-biometric-auth";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,8 +28,39 @@ const convex = new ConvexReactClient(
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string;
 
+const LOCK_AFTER_MS = 5 * 60 * 1000; // 5 minutes
+
 function RootLayoutNav() {
-  const { isLoaded } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
+  const router = useRouter();
+  const { isEnabled, isAvailable } = useBiometricAuth();
+  const backgroundedAt = useRef<number | null>(null);
+
+  usePushNotifications();
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      "change",
+      (nextState: AppStateStatus) => {
+        if (nextState === "background" || nextState === "inactive") {
+          backgroundedAt.current = Date.now();
+        } else if (nextState === "active") {
+          const bg = backgroundedAt.current;
+          if (
+            bg !== null &&
+            isSignedIn &&
+            isEnabled &&
+            isAvailable &&
+            Date.now() - bg > LOCK_AFTER_MS
+          ) {
+            backgroundedAt.current = null;
+            router.push("/biometric-lock" as any);
+          }
+        }
+      }
+    );
+    return () => subscription.remove();
+  }, [isSignedIn, isEnabled, isAvailable, router]);
 
   if (!isLoaded) return null;
 
@@ -35,6 +69,7 @@ function RootLayoutNav() {
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)" options={{ animation: "fade" }} />
       <Stack.Screen name="(app)" options={{ animation: "fade" }} />
+      <Stack.Screen name="biometric-lock" options={{ presentation: "fullScreenModal", animation: "fade" }} />
     </Stack>
   );
 }
