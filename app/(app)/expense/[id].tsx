@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Image, Modal } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -20,9 +20,16 @@ export default function ExpenseDetailScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
 
+  const [receiptVisible, setReceiptVisible] = useState(false);
+
   const expense = useQuery(api.expenses.getById, { id: id as Id<"expenses"> });
   const removeExpense = useMutation(api.expenses.remove);
   const restoreExpense = useMutation(api.expenses.restore);
+
+  const receiptUrl = useQuery(
+    api.expenses.getReceiptUrl,
+    expense?.receiptId ? { storageId: expense.receiptId } : "skip"
+  );
 
   const handleDelete = useCallback(() => {
     Alert.alert("Delete Transaction", "Are you sure you want to delete this transaction?", [
@@ -103,6 +110,63 @@ export default function ExpenseDetailScreen() {
           🗑️  Delete Transaction
         </Text>
       </TouchableOpacity>
+
+      {/* Receipt thumbnail */}
+      {receiptUrl && (
+        <>
+          <View style={{ gap: 8 }}>
+            <Text style={{ fontFamily: "Inter_500Medium", fontSize: 13, color: "#94A3B8" }}>
+              Receipt
+            </Text>
+            <TouchableOpacity onPress={() => setReceiptVisible(true)} activeOpacity={0.8}>
+              <Image
+                source={{ uri: receiptUrl }}
+                style={{ width: 120, height: 90, borderRadius: 10 }}
+                resizeMode="cover"
+              />
+              <Text
+                style={{
+                  fontFamily: "Inter_400Regular",
+                  fontSize: 11,
+                  color: "#94A3B8",
+                  marginTop: 4,
+                }}
+              >
+                Tap to view full size
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <Modal visible={receiptVisible} transparent animationType="fade">
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                backgroundColor: "#0F172Aee",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              activeOpacity={1}
+              onPress={() => setReceiptVisible(false)}
+            >
+              <Image
+                source={{ uri: receiptUrl }}
+                style={{ width: "90%", height: "70%", borderRadius: 12 }}
+                resizeMode="contain"
+              />
+              <Text
+                style={{
+                  fontFamily: "Inter_400Regular",
+                  fontSize: 13,
+                  color: "#94A3B8",
+                  marginTop: 16,
+                }}
+              >
+                Tap anywhere to close
+              </Text>
+            </TouchableOpacity>
+          </Modal>
+        </>
+      )}
 
       <ExpenseForm
         ref={formRef}

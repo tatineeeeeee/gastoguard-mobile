@@ -11,6 +11,8 @@ import { DateField } from "@/components/ui/DateField";
 import { amountStringToCentavos } from "@/lib/amount";
 import { centavosToPesos } from "@/lib/currency";
 import type { ExpenseWithCategory } from "@/lib/types";
+import { useHaptics } from "@/hooks/use-haptics";
+import { ReceiptPicker } from "@/components/expenses/ReceiptPicker";
 
 export type ExpenseFormHandle = {
   submit: () => Promise<void>;
@@ -43,8 +45,10 @@ export const ExpenseForm = forwardRef<ExpenseFormHandle, Props>(
     );
     const [description, setDescription] = useState(initial?.description ?? "");
     const [date, setDate] = useState(initial?.date ?? Date.now());
+    const [receiptStorageId, setReceiptStorageId] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
+    const haptics = useHaptics();
     const categories = useQuery(api.categories.list, { type: txType });
     const createExpense = useMutation(api.expenses.create);
     const updateExpense = useMutation(api.expenses.update);
@@ -73,7 +77,9 @@ export const ExpenseForm = forwardRef<ExpenseFormHandle, Props>(
             description: description.trim(),
             date,
             type: txType,
+            receiptId: receiptStorageId as any ?? undefined,
           });
+          haptics.success();
           onSubmitted(id);
         } else if (initial) {
           await updateExpense({
@@ -166,6 +172,15 @@ export const ExpenseForm = forwardRef<ExpenseFormHandle, Props>(
 
         {/* Date */}
         <DateField value={date} onChange={setDate} label="Date" />
+
+        {/* Receipt — create mode only */}
+        {mode === "create" && (
+          <ReceiptPicker
+            storageId={receiptStorageId}
+            onUpload={setReceiptStorageId}
+            onRemove={() => setReceiptStorageId(null)}
+          />
+        )}
       </View>
     );
   }
