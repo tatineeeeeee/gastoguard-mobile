@@ -1,7 +1,8 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@clerk/expo";
 import { useRouter } from "expo-router";
+import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 
 type MenuItem = {
   icon: string;
@@ -14,7 +15,7 @@ type MenuItem = {
 const MENU_ITEMS: MenuItem[] = [
   { icon: "💰", label: "Budgets", sublabel: "Track spending limits", route: "/(app)/budgets" },
   { icon: "🤝", label: "Utang Tracker", sublabel: "Manage debts and loans", route: "/(app)/utang" },
-  { icon: "📊", label: "Analytics", sublabel: "Coming Week 4", disabled: true },
+  { icon: "📊", label: "Analytics", sublabel: "Spending trends and health score", route: "/(app)/analytics" },
   { icon: "🔁", label: "Recurring", sublabel: "Coming Week 2", disabled: true },
   { icon: "⚙️", label: "Settings", sublabel: "Coming Week 6", disabled: true },
 ];
@@ -23,6 +24,7 @@ export default function MoreScreen() {
   const insets = useSafeAreaInsets();
   const { signOut } = useAuth();
   const router = useRouter();
+  const { isAvailable, isEnabled, enable, disable } = useBiometricAuth();
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -97,6 +99,39 @@ export default function MoreScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Biometric toggle */}
+        {isAvailable && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: "#1E293B",
+              borderRadius: 12,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: "#334155",
+              gap: 16,
+              marginTop: 12,
+            }}
+          >
+            <Text style={{ fontSize: 24 }}>🔒</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontFamily: "Inter_500Medium", fontSize: 15, color: "#F8FAFC" }}>
+                Biometric Login
+              </Text>
+              <Text style={{ fontFamily: "Inter_400Regular", fontSize: 12, color: "#94A3B8", marginTop: 2 }}>
+                Lock after 5 min in background
+              </Text>
+            </View>
+            <Switch
+              value={isEnabled}
+              onValueChange={(v) => (v ? enable() : disable())}
+              trackColor={{ false: "#334155", true: "#10B98160" }}
+              thumbColor={isEnabled ? "#10B981" : "#94A3B8"}
+            />
+          </View>
+        )}
 
         <TouchableOpacity
           onPress={handleSignOut}
