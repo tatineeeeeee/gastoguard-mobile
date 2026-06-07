@@ -34,12 +34,12 @@ yarn-error.*
 .env*.local
 .env
 
-# EAS
-eas.json
-
 # typescript
 *.tsbuildinfo
 
 # generated native folders
 /ios
 /android
+
+# Claude Code local agent settings
+.claude/
