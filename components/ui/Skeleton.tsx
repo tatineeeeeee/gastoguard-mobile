@@ -56,6 +56,8 @@ export function SkeletonCard({ style }: { style?: ViewStyle }) {
   );
 }
 
+export const SkeletonText = Skeleton;
+
 export function SkeletonList({ count = 4, itemHeight = 64 }: { count?: number; itemHeight?: number }) {
   return (
     <View style={{ gap: 8 }}>
