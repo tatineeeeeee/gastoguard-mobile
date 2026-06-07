@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "expo-router";
@@ -18,7 +19,7 @@ const TAB_OPTIONS = [
   { value: "i_owe", label: "Utang Ko", activeColor: "#F43F5E" },
 ];
 
-export default function UtangScreen() {
+function UtangContent() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { show } = useToast();
@@ -126,5 +127,13 @@ export default function UtangScreen() {
         />
       )}
     </View>
+  );
+}
+
+export default function UtangScreen() {
+  return (
+    <ErrorBoundary>
+      <UtangContent />
+    </ErrorBoundary>
   );
 }
