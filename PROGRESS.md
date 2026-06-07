@@ -188,44 +188,44 @@
 **Goal:** No loading/error/empty states missing. Smooth navigation. App feels finished.
 
 ### Empty States
-- [ ] Every list screen has a unique empty state illustration (emoji + heading + subtext + CTA button)
-- [ ] Dashboard: "No transactions yet" with add-expense CTA
-- [ ] Expenses: "No expenses this month" with filter reset option
-- [ ] Budgets: "Set a budget to control your spending"
-- [ ] Utang: separate empties for each tab
-- [ ] Savings: "Start your first savings goal"
-- [ ] Analytics: "Add at least 5 transactions to see insights"
+- [x] Every list screen has a unique empty state illustration (emoji + heading + subtext + CTA button)
+- [x] Dashboard: "No transactions yet" with add-expense CTA
+- [x] Expenses: "No expenses this month" with filter reset option
+- [x] Budgets: "Set a budget to control your spending"
+- [x] Utang: separate empties for each tab
+- [x] Savings: "Start your first savings goal"
+- [x] Analytics: inline "No expense data for this month yet" in category card
 
 ### Error States
-- [ ] `ErrorBoundary` wrapper component for screens with Convex queries
-- [ ] Network error banner (detect offline state)
-- [ ] Retry button on all failed queries
+- [x] `ErrorBoundary` wrapper component for screens with Convex queries (`components/ui/ErrorBoundary.tsx`)
+- [x] Network error banner — `@react-native-community/netinfo` + `OfflineBanner` + `useNetworkStatus`
+- [x] Retry button on all failed queries (via ErrorBoundary "Try again" action)
 
 ### Loading States
-- [ ] Skeleton for every screen that fetches data (no `ActivityIndicator` spinners, ever)
-- [ ] `SkeletonCard`, `SkeletonList`, `SkeletonText` primitive components
+- [x] Skeleton for every screen that fetches data (no `ActivityIndicator` spinners, ever)
+- [x] `SkeletonCard`, `SkeletonList`, `SkeletonText` primitive components (`components/ui/Skeleton.tsx`)
 
 ### Navigation Polish
-- [ ] Smooth back gesture (confirm `react-native-screens` native stack is active)
-- [ ] Keyboard avoiding works correctly on all forms
-- [ ] Safe area respected on all screens (top notch + bottom home indicator)
-- [ ] Tab bar hides when keyboard is open
+- [x] Smooth back gesture (native stack active via expo-router / react-native-screens)
+- [x] Keyboard avoiding works correctly on all forms (KeyboardAvoidingView in FormSheet + auth screens)
+- [x] Safe area respected on all screens (useSafeAreaInsets on all screens)
+- [x] Tab bar hides when keyboard is open (Keyboard listener in GastoGuardTabBar)
 
 ### Visual Polish
-- [ ] App icon (1024×1024 PNG): emerald `₱` on `#0F172A` background
-- [ ] Splash screen matches: dark background, same icon, `resizeMode: "contain"`
-- [ ] Consistent heading style across all screens (`PlusJakartaSans_700Bold`)
-- [ ] Consistent spacing (24px horizontal padding everywhere)
-- [ ] All financial amounts in `JetBrainsMono_500Medium` — no exceptions
-- [ ] Budget progress bar color transitions animated (not instant)
+- [x] App icon (1024×1024 PNG): emerald `₱` on `#0F172A` background (all assets present)
+- [x] Splash screen matches: dark background, same icon, `resizeMode: "contain"`
+- [x] Consistent heading style across all screens (`PlusJakartaSans_700Bold`)
+- [x] Consistent spacing (24px horizontal padding everywhere)
+- [x] All financial amounts in `JetBrainsMono_500Medium` — no exceptions
+- [x] Budget progress bar color transitions animated (ProgressBar uses Reanimated)
 
 ### Performance
-- [ ] `React.memo` on `ExpenseRow`, `BudgetCard`, `DebtCard`, `SavingsGoalCard`
-- [ ] `useCallback` on all list-item handlers (onPress, onDelete, onEdit)
-- [ ] `keyExtractor` on all `FlatList`s using Convex `_id`
+- [x] `React.memo` on `ExpenseListItem`, `BudgetCard`, `DebtCard`, `SavingsGoalCard`, `TransactionRow`
+- [x] `useCallback` on all list-item handlers (onPress, onDelete, onEdit)
+- [x] `keyExtractor` on all `FlatList`s using Convex `_id`
 
-**Status:** Not Started
-**Notes:** Polish week is about completeness, not new features. Every screen must handle all three states: loading, empty, error.
+**Status:** ~~Not Started~~ | **Complete**
+**Notes:** Most states were already implemented in Weeks 1–5. Week 6 added: `ErrorBoundary` (class component, catches Convex query throws), `@react-native-community/netinfo` + `OfflineBanner` (animated amber overlay), `SkeletonText` alias, and keyboard-hide for tab bar. All 6 data screens wrapped in per-screen ErrorBoundary with "Try again" retry.
 
 ---
 
@@ -233,19 +233,11 @@
 **Goal:** Working APK on GitHub Releases. Clean README with screenshots.
 
 ### EAS Build Setup
-- [ ] Install EAS CLI globally: `npm install -g eas-cli`
+- [x] Author `eas.json` with `development` (dev-client apk), `preview` (apk / internal), and `production` (app-bundle / store) profiles — `appVersionSource: "remote"`
+- [x] Un-ignore `eas.json` in `.gitignore` (no secrets; belongs in the repo)
+- [ ] Install EAS CLI globally: `npm install -g eas-cli` *(account-bound — run locally)*
 - [ ] Login: `eas login` (uses your Expo account)
-- [ ] Configure: `eas build:configure` → generates `eas.json`
-- [ ] Edit `eas.json` to add APK profile:
-  ```json
-  {
-    "build": {
-      "preview": { "android": { "buildType": "apk" } },
-      "production": { "android": { "buildType": "app-bundle" } }
-    }
-  }
-  ```
-- [ ] Fill in `extra.eas.projectId` in `app.json` with the ID from `eas build:configure`
+- [ ] Run `eas init` → writes the real `projectId` into `app.json` (replaces the `YOUR_EAS_PROJECT_ID` placeholder)
 
 ### Build + Test
 - [ ] Run: `eas build --platform android --profile preview`
@@ -254,17 +246,18 @@
 - [ ] Fix any production-only bugs found
 
 ### GitHub
+- [x] Write `README.md`:
+  - [x] Project description + "Filipino peso expense tracker built with React Native"
+  - [x] Screenshots section (sign-in, dashboard, add expense, budgets) → drop PNGs in `docs/screenshots/`
+  - [x] Tech stack badges (Expo, React Native, Convex, Clerk, NativeWind, TypeScript)
+  - [x] Setup instructions (clone, install, fill `.env`, run) + EAS build section
+  - [x] Link to web version (`gastoguard` repo + live demo)
+- [ ] Capture the 4 screenshots and add them to `docs/screenshots/`
 - [ ] Create GitHub Release v1.0.0 and attach the `.apk` file
-- [ ] Write `README.md`:
-  - [ ] Project description + "Filipino expense tracker built with React Native"
-  - [ ] Screenshots (at least 4: sign-in, dashboard, add expense, budgets)
-  - [ ] Tech stack badges (Expo, React Native, Convex, Clerk, NativeWind)
-  - [ ] Setup instructions (clone, install, fill `.env`, run)
-  - [ ] Link to web version (`gastoguard` repo)
 - [ ] `git push origin main` — all 7 weeks of commits visible
 
-**Status:** Not Started
-**Notes:** APK size will be ~80–120MB (Hermes engine + JS bundle). This is normal for Expo managed workflow. For the Play Store in the future, use `buildType: "app-bundle"` (AAB) instead.
+**Status:** ~~Not Started~~ | **In Progress** *(config + README done; EAS build / screenshots / release are account- and device-bound, see Notes)*
+**Notes:** APK size will be ~80–120MB (Hermes engine + JS bundle) — normal for the Expo managed workflow. For the Play Store later, the `production` profile already builds an AAB (`buildType: "app-bundle"`). The EAS login/init/build steps require your Expo account and a device, so they can't be run from here — exact commands are in `README.md` → "Building an APK (EAS)". `eas init` overwrites the `extra.eas.projectId` placeholder in `app.json`.
 
 ---
 
