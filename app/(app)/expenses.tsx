@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { View, Text, FlatList, Alert } from "react-native";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePaginatedQuery, useMutation } from "convex/react";
 import { useRouter } from "expo-router";
@@ -14,7 +15,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 
 type FilterValue = "all" | "income" | "expense";
 
-export default function ExpensesScreen() {
+function ExpensesContent() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { show } = useToast();
@@ -141,5 +142,13 @@ export default function ExpensesScreen() {
         />
       )}
     </View>
+  );
+}
+
+export default function ExpensesScreen() {
+  return (
+    <ErrorBoundary>
+      <ExpensesContent />
+    </ErrorBoundary>
   );
 }
