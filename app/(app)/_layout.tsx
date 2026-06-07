@@ -1,10 +1,12 @@
 import { Tabs, useRouter } from "expo-router";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Keyboard } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useAuth } from "@clerk/expo";
 import { Redirect } from "expo-router";
+import { useEffect, useState } from "react";
 import { ToastProvider } from "@/components/feedback/ToastProvider";
+import { OfflineBanner } from "@/components/feedback/OfflineBanner";
 import { useHaptics } from "@/hooks/use-haptics";
 
 const TAB_CONFIG = [
@@ -18,6 +20,15 @@ const TAB_CONFIG = [
 function GastoGuardTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const haptics = useHaptics();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener("keyboardDidHide", () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
+
+  if (keyboardVisible) return null;
 
   return (
     <View
@@ -118,6 +129,7 @@ export default function AppLayout() {
 
   return (
     <ToastProvider>
+      <OfflineBanner />
       <Tabs
         tabBar={(props) => <GastoGuardTabBar {...props} />}
         screenOptions={{ headerShown: false }}
