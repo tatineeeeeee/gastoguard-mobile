@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, ScrollView } from "react-native";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -41,7 +42,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AnalyticsScreen() {
+function AnalyticsContent() {
   const insets = useSafeAreaInsets();
 
   const now = useMemo(() => {
@@ -216,5 +217,13 @@ export default function AnalyticsScreen() {
         </View>
       </ScrollView>
     </View>
+  );
+}
+
+export default function AnalyticsScreen() {
+  return (
+    <ErrorBoundary>
+      <AnalyticsContent />
+    </ErrorBoundary>
   );
 }
