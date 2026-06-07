@@ -6,6 +6,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { KpiCards } from "@/components/expenses/KpiCards";
 import { RecentTransactionsList } from "@/components/expenses/RecentTransactionsList";
 import { monthRange } from "@/lib/dates";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -16,7 +17,7 @@ function getGreeting() {
 
 const { startMs, endMs } = monthRange(Date.now());
 
-export default function DashboardScreen() {
+function DashboardContent() {
   const insets = useSafeAreaInsets();
   const { user, isLoading } = useCurrentUser();
   const summary = useQuery(api.expenses.getSummary, { startDate: startMs, endDate: endMs });
@@ -55,5 +56,13 @@ export default function DashboardScreen() {
         <RecentTransactionsList limit={5} />
       </View>
     </ScrollView>
+  );
+}
+
+export default function DashboardScreen() {
+  return (
+    <ErrorBoundary>
+      <DashboardContent />
+    </ErrorBoundary>
   );
 }
