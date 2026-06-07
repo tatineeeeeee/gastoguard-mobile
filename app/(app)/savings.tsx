@@ -6,6 +6,7 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "expo-router";
@@ -17,7 +18,7 @@ import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/feedback/ToastProvider";
 
-export default function SavingsScreen() {
+function SavingsContent() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { show } = useToast();
@@ -149,5 +150,13 @@ export default function SavingsScreen() {
         />
       )}
     </View>
+  );
+}
+
+export default function SavingsScreen() {
+  return (
+    <ErrorBoundary>
+      <SavingsContent />
+    </ErrorBoundary>
   );
 }
