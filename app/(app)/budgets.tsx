@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { View, Text, FlatList, Alert } from "react-native";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "expo-router";
@@ -11,7 +12,7 @@ import { useToast } from "@/components/feedback/ToastProvider";
 import type { BudgetWithSpending } from "@/lib/types";
 import { TouchableOpacity } from "react-native";
 
-export default function BudgetsScreen() {
+function BudgetsContent() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { show } = useToast();
@@ -98,5 +99,13 @@ export default function BudgetsScreen() {
         />
       )}
     </View>
+  );
+}
+
+export default function BudgetsScreen() {
+  return (
+    <ErrorBoundary>
+      <BudgetsContent />
+    </ErrorBoundary>
   );
 }
